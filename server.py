@@ -53,7 +53,19 @@ class MiniHTTPServer(BaseHTTPRequestHandler):
             return
         
         self.send_error(404, 'File {} not found'.format(file))
-        
+    
+    def echo(self):
+        self.send_response(200)
+        self.send_header('Content-Type', self.headers['Content-Type'])
+        self.end_headers()
+        clen = int(self.headers['Content-Length'])
+        self.wfile.write(self.rfile.read(clen))
+    
+    def redirect(self, url):
+        self.send_response(301)
+        self.send_header('Location', url)
+        self.end_headers()
+    
     def send_text(self, code, text, content_type='text/plain; charset=utf-8'):
         self.send_response(code)
         self.send_header('Content-Type', content_type)
@@ -114,14 +126,6 @@ class MiniHTTPServer(BaseHTTPRequestHandler):
             return
         
         self.send_error(404, 'Path "{}" not found.'.format(self.path))
-    
-    def echo(self):
-        content_type = self.headers['Content-Type']
-        self.send_response(200)
-        self.send_header('Content-Type', content_type)
-        self.end_headers()
-        clen = int(self.headers['Content-Length'])
-        self.wfile.write(self.rfile.read(clen))
 
 
 #from socketserver import ThreadingMixIn
